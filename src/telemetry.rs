@@ -1,12 +1,15 @@
-
 use tokio::task::JoinHandle;
 use tracing::Subscriber;
-use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
-use tracing_subscriber::{fmt::{MakeWriter, self, format::FmtSpan}, prelude::*, EnvFilter, Registry};
+//use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
+use tracing_subscriber::{
+    fmt::{self, format::FmtSpan, MakeWriter},
+    prelude::*,
+    EnvFilter, /*, Registry*/
+};
 
 /// Sets up a tracing subscriber.
 pub fn get_subscriber<Sink>(
-    name: String,
+    _name: String,
     env_filter: String,
     sink: Sink,
 ) -> impl Subscriber + Send + Sync
@@ -16,18 +19,18 @@ where
     let filter_layer =
         EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter));
 
-   // --This code uses tracing-subscriber--
-     let fmt_layer = fmt::layer()
-         .compact()
-         .with_target(true)
-         .with_line_number(true)
-         .with_span_events(FmtSpan::ACTIVE)
-         .with_writer(sink);
+    // --This code uses tracing-subscriber--
+    let fmt_layer = fmt::layer()
+        .compact()
+        .with_target(true)
+        .with_line_number(true)
+        .with_span_events(FmtSpan::ACTIVE)
+        .with_writer(sink);
 
-     tracing_subscriber::registry()
-         .with(filter_layer)
-         .with(fmt_layer)
-     //----
+    tracing_subscriber::registry()
+        .with(filter_layer)
+        .with(fmt_layer)
+    //----
 
     //let bunyan_format = BunyanFormattingLayer::new(name, sink);
 

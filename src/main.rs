@@ -14,12 +14,12 @@ async fn health_check() -> impl Responder {
     HttpResponse::Ok().body("Healthy. Enough said.")
 }
 
-
 #[shuttle_runtime::main]
 #[tracing::instrument]
 async fn main() -> ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clone + 'static> {
     // Set up tracing
-    let subscriber = telemetry::get_subscriber("shuttle-cch".into(), "info".into(), std::io::stdout);
+    let subscriber =
+        telemetry::get_subscriber("shuttle-cch".into(), "info".into(), std::io::stdout);
     telemetry::init_subscriber(subscriber);
 
     tracing::info!("Tracing enabled.");
