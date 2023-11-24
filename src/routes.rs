@@ -1,3 +1,5 @@
-mod health_check;
+pub mod health_check;
+pub mod home;
 
-pub use health_check::health_check_get;
+pub use health_check::*;
+pub use home::*;

@@ -1,14 +1,9 @@
-use actix_web::{get, web::ServiceConfig};
-use cch::{telemetry,routes::health_check_get};
+use actix_web::web::ServiceConfig;
+use cch::{telemetry,routes::{health_check, home}};
 use shuttle_actix_web::ShuttleActixWeb;
 
 
 
-#[get("/")]
-#[tracing::instrument]
-async fn hello_world() -> &'static str {
-    "Let the Christmas Code Hunt begin!"
-}
 
 
 #[shuttle_runtime::main]
@@ -22,7 +17,7 @@ async fn main() -> ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clon
     tracing::info!("Tracing enabled.");
 
     let config = move |cfg: &mut ServiceConfig| {
-        cfg.service(hello_world).service(health_check_get);
+        cfg.service(home).service(health_check);
     };
     tracing::info!("Services online.");
 
