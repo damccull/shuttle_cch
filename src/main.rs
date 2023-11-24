@@ -5,7 +5,7 @@ use shuttle_actix_web::ShuttleActixWeb;
 #[get("/")]
 #[tracing::instrument]
 async fn hello_world() -> &'static str {
-    "Hello World!"
+    "Let the Christmas Code Hunt begin!"
 }
 
 #[get("/health_check")]
