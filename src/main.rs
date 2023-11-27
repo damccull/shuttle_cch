@@ -1,5 +1,5 @@
 use actix_web::web::ServiceConfig;
-use cch::{telemetry,routes::{health_check, home}};
+use cch_23::{telemetry,routes::{health_check, home}};
 use shuttle_actix_web::ShuttleActixWeb;
 
 

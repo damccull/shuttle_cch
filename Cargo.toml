@@ -1,15 +1,15 @@
 [package]
-name = "damccull-cch"
+name = "cch23-damccull"
 version = "0.1.0"
 edition = "2021"
 #default-run = "cch"
 
 [lib]
-name = "cch"
+name = "cch_23"
 path = "src/lib.rs"
 
 [[bin]]
-name = "damccull-cch"
+name = "cch23-damccull"
 path = "src/main.rs"
 
 [dependencies]
