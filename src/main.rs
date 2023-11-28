@@ -1,6 +1,6 @@
 use actix_web::web::ServiceConfig;
 use cch_23::{
-    routes::{health_check, home},
+    routes::{health_check, home, neg_one_bonus_return_error},
     telemetry,
 };
 
@@ -51,5 +51,7 @@ fn setup_tracing() {
 }
 
 fn configure_routes(cfg: &mut ServiceConfig) {
-    cfg.service(home).service(health_check);
+    cfg.service(home)
+        .service(health_check)
+        .service(neg_one_bonus_return_error);
 }
