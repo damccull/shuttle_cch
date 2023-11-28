@@ -19,7 +19,7 @@ impl Application {
         let address = format!("{}:{}", listen_addr, listen_port);
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();
-        let server = run(listener)?;
+        let server = build_server(listener)?;
         Ok(Self { port, server })
     }
 
@@ -32,7 +32,7 @@ impl Application {
     }
 }
 
-pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
+pub fn build_server(listener: TcpListener) -> Result<Server, std::io::Error> {
     let config = move |cfg: &mut ServiceConfig| {
         configure_services(cfg);
     };
