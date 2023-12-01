@@ -1,7 +1,7 @@
 use actix_web::{get, web::Path, HttpRequest, HttpResponse, Responder};
 
 #[tracing::instrument]
-// #[get(r#"/1/{tail:(?:\/\d+)+}"#)]
+// #[get(r#"/1{tail:(?:\/\d+)+}"#)]
 #[get(r#"/1/{tail:.*}"#)]
 pub async fn xor_power3(req: HttpRequest, path: Path<String>) -> impl Responder {
     let split = path.split("/");
