@@ -7,7 +7,8 @@ use actix_web::{
     App, HttpServer, middleware,
 };
 
-use crate::routes::{health_check, home, neg_one_bonus_return_error};
+
+use crate::routes::{health_check, home, neg_one, one};
 
 pub struct Application {
     port: u16,
@@ -48,7 +49,8 @@ pub fn configure_services(cfg: &mut ServiceConfig) {
         web::scope("")
             .service(home)
             .service(health_check)
-            .service(neg_one_bonus_return_error)
+            .service(neg_one::bonus_return_error)
+            .service(one::xor_power3)
             .wrap(middleware::NormalizePath::trim())
             .wrap(TracingLogger::default()),
     );
