@@ -16,7 +16,7 @@ pub struct Application {
 }
 
 impl Application {
-    pub async fn build(listen_addr: String, listen_port: u16) -> Result<Self, std::io::Error> {
+    pub async fn build(listen_addr: &str, listen_port: u16) -> Result<Self, std::io::Error> {
         let address = format!("{}:{}", listen_addr, listen_port);
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();

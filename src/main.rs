@@ -34,7 +34,7 @@ async fn main() -> std::io::Result<()> {
     setup_tracing();
     tracing::info!("Tracing enabled.");
 
-    let app = Application::build("127.0.0.1".to_string(), 8000).await?;
+    let app = Application::build("127.0.0.1", 8000).await?;
 
     app.run_until_stopped().await?;
     Ok(())
