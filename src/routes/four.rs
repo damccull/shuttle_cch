@@ -1,10 +1,10 @@
 use std::fmt::Display;
 
-use actix_web::{get, web::Json, HttpResponse, Responder};
+use actix_web::{web::Json, HttpResponse, Responder, post};
 use serde::{Deserialize, Serialize};
 
 #[tracing::instrument]
-#[get("/4/strength")]
+#[post("/4/strength")]
 pub async fn strength(reindeer: Json<Vec<Reindeer>>) -> impl Responder {
     tracing::debug!("{:#?}", reindeer);
     let result = reindeer.iter().fold(0u32, |acc, deer| acc + deer.strength);
@@ -12,7 +12,7 @@ pub async fn strength(reindeer: Json<Vec<Reindeer>>) -> impl Responder {
 }
 
 #[tracing::instrument]
-#[get("/4/contest")]
+#[post("/4/contest")]
 pub async fn contest(reindeer: Json<Vec<ReindeerContestEntry>>) -> impl Responder {
     if let Ok(winners) = determine_winners(reindeer.0) {
         return HttpResponse::Ok().json(winners);
