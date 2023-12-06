@@ -1,4 +1,7 @@
-use cch_23::{application::Application, telemetry::{get_subscriber, init_subscriber}};
+use cch_23::{
+    application::Application,
+    telemetry::{get_subscriber, init_subscriber},
+};
 use once_cell::sync::Lazy;
 
 static TRACING: Lazy<()> = Lazy::new(|| {
@@ -32,7 +35,7 @@ pub async fn spawn_app() -> TestApp {
 
     let port = app.port().await;
     let address = format!("http://{}:{}", address, port);
-    
+
     tokio::spawn(app.run_until_stopped());
 
     let test_app = TestApp {

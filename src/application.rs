@@ -3,12 +3,12 @@ use tracing_actix_web::TracingLogger;
 
 use actix_web::{
     dev::Server,
+    middleware,
     web::{self, ServiceConfig},
-    App, HttpServer, middleware,
+    App, HttpServer,
 };
 
-
-use crate::routes::{health_check, home, neg_one, one, four};
+use crate::routes::{four, health_check, home, neg_one, one};
 
 pub struct Application {
     port: u16,

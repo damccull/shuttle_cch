@@ -6,7 +6,7 @@ async fn health_check_works() -> Result<(), Box<dyn std::error::Error>> {
     let app = spawn_app().await;
     let client = reqwest::Client::new();
 
-    tracing::debug!("{:#?}",&app);
+    tracing::debug!("{:#?}", &app);
 
     // Act
     let response = client
@@ -20,4 +20,3 @@ async fn health_check_works() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(Some(21), response.content_length());
     Ok(())
 }
-

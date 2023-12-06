@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use actix_web::{web::Json, HttpResponse, Responder, post};
+use actix_web::{post, web::Json, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 #[tracing::instrument]
