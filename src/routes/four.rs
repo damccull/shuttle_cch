@@ -83,7 +83,7 @@ impl Display for ReindeerContestEntry {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ContestWinners {
     fastest: String,
     tallest: String,
