@@ -7,8 +7,9 @@ async fn elves() -> Result<(), Box<dyn std::error::Error>> {
     let app = spawn_app().await;
     let client = reqwest::Client::new();
 
-    let body = "there is an elf on a shelf on an elf.
-      there is also another shelf in Belfast."
+    let body = "The mischievous elf peeked out from behind the toy workshop,
+      and another elf joined in the festive dance.
+      Look, there is also an elf on that shelf!"
         .to_string();
 
     // Act
@@ -25,7 +26,7 @@ async fn elves() -> Result<(), Box<dyn std::error::Error>> {
 
     assert!(response.status().is_success());
     let elves = response.json::<ElfReply>().await?;
-    assert_eq!(elves.elf, 5);
+    assert_eq!(elves.elf, 4);
     Ok(())
 }
 
