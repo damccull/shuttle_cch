@@ -184,14 +184,7 @@ fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, Rec
     };
     tracing::trace!("base64 decode: {:#?}", &recipe);
 
-    let Ok(recipe) = std::str::from_utf8(&recipe) else {
-        return Err(RecipeParseError::UnexpectedError(anyhow::anyhow!(
-            "Can't convert decoded to string"
-        )));
-    };
-    tracing::trace!("Convert to str: {:#?}", &recipe);
-
-    let recipe = serde_json::Value::from_str(recipe).map_err(|e| {
+    let recipe = serde_json::from_slice::<serde_json::Value>(&recipe).map_err(|e| {
         RecipeParseError::UnexpectedError(anyhow::anyhow!("Unable to parse to JSON: {}", e))
     });
     tracing::trace!("Json: {:#?}", &recipe);
