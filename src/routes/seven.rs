@@ -1,4 +1,4 @@
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
 
 use actix_web::{get, HttpRequest, HttpResponse, Responder};
 use base64::{engine::general_purpose, Engine as _};
