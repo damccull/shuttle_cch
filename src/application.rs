@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpServer,
 };
 
-use crate::routes::{four, health_check, home, neg_one, one, six};
+use crate::routes::{four, health_check, home, neg_one, one, seven, six};
 
 pub struct Application {
     port: u16,
@@ -54,6 +54,8 @@ pub fn configure_services(cfg: &mut ServiceConfig) {
             .service(four::strength)
             .service(four::contest)
             .service(six::elf_on_a_self)
+            .service(seven::decode)
+            .service(seven::bake)
             .wrap(middleware::NormalizePath::trim())
             .wrap(TracingLogger::default()),
     );

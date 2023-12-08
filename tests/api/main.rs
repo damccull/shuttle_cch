@@ -2,4 +2,5 @@ mod four;
 mod health_check;
 mod helpers;
 mod one;
+mod seven;
 mod six;
