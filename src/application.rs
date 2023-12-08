@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpServer,
 };
 
-use crate::routes::{five, four, health_check, neg_one, one, seven, six};
+use crate::routes::{day0, day1, day4, day5, day6, day7, health_check};
 
 pub struct Application {
     port: u16,
@@ -47,16 +47,16 @@ pub fn build_server(listener: TcpListener) -> Result<Server, std::io::Error> {
 pub fn configure_services(cfg: &mut ServiceConfig) {
     cfg.service(
         web::scope("")
-            .service(neg_one::home)
             .service(health_check)
-            .service(neg_one::bonus_return_error)
-            .service(one::xor_power3)
-            .service(four::strength)
-            .service(four::contest)
-            .service(five::grinch)
-            .service(six::elf_on_a_self)
-            .service(seven::decode)
-            .service(seven::bake)
+            .service(day0::home)
+            .service(day0::bonus_return_error)
+            .service(day1::xor_power3)
+            .service(day4::strength)
+            .service(day4::contest)
+            .service(day5::grinch)
+            .service(day6::elf_on_a_self)
+            .service(day7::decode)
+            .service(day7::bake)
             .wrap(middleware::NormalizePath::trim())
             .wrap(TracingLogger::default()),
     );

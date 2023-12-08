@@ -1,6 +1,6 @@
-mod four;
+mod day1;
+mod day4;
+mod day6;
+mod day7;
 mod health_check;
 mod helpers;
-mod one;
-mod seven;
-mod six;
