@@ -1,22 +1,23 @@
 use std::collections::HashMap;
 
-use actix_web::{get, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, http::StatusCode, HttpRequest, HttpResponse, Responder, ResponseError};
 use anyhow::Context;
 use base64::{engine::general_purpose, Engine as _};
 use serde::Serialize;
 
 #[tracing::instrument]
 #[get("/7/decode")]
-pub async fn decode(request: HttpRequest) -> impl Responder {
-    let r = match get_recipe_from_header(request) {
-        Ok(r) => r,
-        Err(e) => {
-            tracing::debug!("Error in recipe cookie: {}", e);
-            return HttpResponse::BadRequest().finish();
-        }
-    };
+pub async fn decode(request: HttpRequest) -> Result<HttpResponse, RecipeParseError> {
+    let r = get_recipe_from_header(request).context("Error in recipe cookie")?;
+    // let r = match get_recipe_from_header(request) {
+    //     Ok(r) => r,
+    //     Err(e) => {
+    //         tracing::debug!("Error in recipe cookie: {}", e);
+    //         return HttpResponse::BadRequest().finish();
+    //     }
+    // };
     tracing::debug!("Recipe: {:?}", &r);
-    HttpResponse::Ok().json(r)
+    Ok(HttpResponse::Ok().json(r))
 }
 
 #[tracing::instrument]
@@ -183,7 +184,7 @@ fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, Rec
 }
 
 #[derive(thiserror::Error)]
-enum RecipeParseError {
+pub enum RecipeParseError {
     #[error(transparent)]
     DecodeError(#[from] base64::DecodeError),
     #[error(transparent)]
@@ -193,5 +194,14 @@ enum RecipeParseError {
 impl std::fmt::Debug for RecipeParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         crate::error_chain_fmt(self, f)
+    }
+}
+
+impl ResponseError for RecipeParseError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            RecipeParseError::DecodeError(_) => StatusCode::BAD_REQUEST,
+            RecipeParseError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
     }
 }
