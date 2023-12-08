@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use actix_web::{get, HttpRequest, HttpResponse, Responder};
+use anyhow::Context;
 use base64::{engine::general_purpose, Engine as _};
 use serde::Serialize;
 
@@ -157,39 +158,28 @@ fn calculate_cookies(bakery: Bakery) -> BakeReply {
 
 #[tracing::instrument]
 fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, RecipeParseError> {
-    let Some(recipe_cookie) = request.cookie("recipe") else {
-        return Err(RecipeParseError::UnexpectedError(anyhow::anyhow!(
-            "No cookie recipe in cookies"
-        )));
-    };
+    let recipe_cookie = request
+        .cookie("recipe")
+        .ok_or_else(|| anyhow::anyhow!("No cookie recipe in cookie jar"))?;
 
     let recipe = recipe_cookie.to_string();
     tracing::trace!("ToString: {:#?}", &recipe);
 
-    let Some((_, recipe)) = recipe.split_once("=") else {
-        return Err(RecipeParseError::UnexpectedError(anyhow::anyhow!(
-            "Badly formed recipe cookie"
-        )));
-    };
+    let (_, recipe) = recipe
+        .split_once("=")
+        .ok_or_else(|| anyhow::anyhow!("Badly formed recipe cookie"))?;
     tracing::trace!("Split: {:#?}", &recipe);
 
-    let recipe = match general_purpose::STANDARD.decode(recipe) {
-        Ok(r) => r,
-        Err(e) => {
-            return Err(RecipeParseError::UnexpectedError(anyhow::anyhow!(
-                "Unable to base64 decode the cookie: {}",
-                e
-            )));
-        }
-    };
+    let recipe = general_purpose::STANDARD
+        .decode(recipe)
+        .context("Unable to base64 decode the cookie.")?;
     tracing::trace!("base64 decode: {:#?}", &recipe);
 
-    let recipe = serde_json::from_slice::<serde_json::Value>(&recipe).map_err(|e| {
-        RecipeParseError::UnexpectedError(anyhow::anyhow!("Unable to parse to JSON: {}", e))
-    });
+    let recipe =
+        serde_json::from_slice::<serde_json::Value>(&recipe).context("Unable to parse to JSON")?;
     tracing::trace!("Json: {:#?}", &recipe);
 
-    recipe
+    Ok(recipe)
 }
 
 #[derive(thiserror::Error)]
