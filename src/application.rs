@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpServer,
 };
 
-use crate::routes::{five, four, health_check, home, neg_one, one, seven, six};
+use crate::routes::{five, four, health_check, neg_one, one, seven, six};
 
 pub struct Application {
     port: u16,
@@ -47,7 +47,7 @@ pub fn build_server(listener: TcpListener) -> Result<Server, std::io::Error> {
 pub fn configure_services(cfg: &mut ServiceConfig) {
     cfg.service(
         web::scope("")
-            .service(home)
+            .service(neg_one::home)
             .service(health_check)
             .service(neg_one::bonus_return_error)
             .service(one::xor_power3)
