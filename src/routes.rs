@@ -3,6 +3,7 @@
 mod health_check;
 mod home;
 
+pub mod five;
 pub mod four;
 pub mod neg_one;
 pub mod one;
