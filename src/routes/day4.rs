@@ -52,7 +52,10 @@ fn determine_winners(reindeer: Vec<ReindeerContestEntry>) -> Result<ContestWinne
             "{} could blast you away with a snow magic power of {}",
             magician, magician.snow_magic_power
         ),
-        consumer: format!("{} ate lots of candies, but also some grass", consumer),
+        consumer: format!(
+            "{} ate lots of candies, but also some {}",
+            consumer, consumer.favorite_food
+        ),
     })
 }
 
