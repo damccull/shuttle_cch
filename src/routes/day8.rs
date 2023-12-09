@@ -6,10 +6,11 @@ const GRAVITATIONAL_ACCELERATION: f32 = 9.825;
 #[tracing::instrument]
 #[get("/8/weight/{id}")]
 pub async fn pokeweight(id: Path<f32>) -> Result<HttpResponse, Box<dyn std::error::Error>> {
-    let weight = PokeWeightGraphQlQuery::new(*id)
+    let weight_hectograms = PokeWeightGraphQlQuery::new(*id)
         .fetch_weight_from_pokemon_api()
         .await?;
-    tracing::trace!("Pokemon weight from API: {}", &weight);
+    tracing::trace!("Pokemon weight from API: {}", &weight_hectograms);
+    let weight = weight_hectograms as f32 / 10f32;
     Ok(HttpResponse::Ok().body(weight.to_string()))
 }
 

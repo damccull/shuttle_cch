@@ -19,7 +19,7 @@ async fn weight_returns_correct_weight_for_pokemon() -> Result<(), Box<dyn std::
     tracing::debug!("{:#?}", &response);
     // Assert
     assert!(response.status().is_success());
-    assert_eq!("60", response.text().await?);
+    assert_eq!("6", response.text().await?);
     Ok(())
 }
 #[tokio::test]
