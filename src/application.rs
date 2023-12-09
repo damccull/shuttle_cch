@@ -8,7 +8,7 @@ use actix_web::{
     App, HttpServer,
 };
 
-use crate::routes::{day0, day1, day4, day5, day6, day7, health_check};
+use crate::routes::{day0, day1, day4, day5, day6, day7, day8, health_check};
 
 pub struct Application {
     port: u16,
@@ -57,6 +57,8 @@ pub fn configure_services(cfg: &mut ServiceConfig) {
             .service(day6::elf_on_a_self)
             .service(day7::decode)
             .service(day7::bake)
+            .service(day8::pokeweight)
+            .service(day8::pokedrop)
             .wrap(middleware::NormalizePath::trim())
             .wrap(TracingLogger::default()),
     );
