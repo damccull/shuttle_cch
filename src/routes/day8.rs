@@ -62,17 +62,17 @@ impl PokeWeightGraphQlQuery {
 
         let weight = pokeapi_result
             .get("data")
-            .ok_or_else(|| anyhow::anyhow!("Unable to find 'data' object in json"))?
+            .context("Unable to find 'data' object in json")?
             .get("pokemon")
-            .ok_or_else(|| anyhow::anyhow!("Unable to find 'pokemon' array"))?
+            .context("Unable to find 'pokemon' array")?
             .as_array()
-            .ok_or_else(|| anyhow::anyhow!("Unable to convert to Vec"))?
+            .context("Unable to convert to Vec")?
             .first()
-            .ok_or_else(|| anyhow::anyhow!("Couldn't get the first pokemon from the array"))?
+            .context("Couldn't get the first pokemon from the array")?
             .get("weight")
-            .ok_or_else(|| anyhow::anyhow!("Couldn't get pokemon's weight"))?
+            .context("Couldn't get pokemon's weight")?
             .as_f64()
-            .ok_or_else(|| anyhow::anyhow!("Couldn't convert to f64"))?;
+            .context("Couldn't convert to f64")?;
 
         Ok(weight)
     }

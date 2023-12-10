@@ -9,14 +9,8 @@ use serde::Serialize;
 #[get("/7/decode")]
 pub async fn decode(request: HttpRequest) -> Result<HttpResponse, RecipeParseError> {
     let r = get_recipe_from_header(request).context("Error in recipe cookie")?;
-    // let r = match get_recipe_from_header(request) {
-    //     Ok(r) => r,
-    //     Err(e) => {
-    //         tracing::debug!("Error in recipe cookie: {}", e);
-    //         return HttpResponse::BadRequest().finish();
-    //     }
-    // };
     tracing::debug!("Recipe: {:?}", &r);
+
     Ok(HttpResponse::Ok().json(r))
 }
 
@@ -67,12 +61,12 @@ fn split_recipe_from_pantry(input: serde_json::Value) -> Result<Bakery, RecipePa
 
     let recipe = input
         .get("recipe")
-        .ok_or_else(|| anyhow::anyhow!("Unable to find recipe in input"))?
+        .context("Unable to find recipe in the input")?
         .to_owned();
 
     let recipe = recipe
         .as_object()
-        .ok_or_else(|| anyhow::anyhow!("Unable to get recipe as object"))?;
+        .context("Unable to get recipe as object")?;
 
     for (key, value) in recipe.iter() {
         bakery
@@ -82,12 +76,12 @@ fn split_recipe_from_pantry(input: serde_json::Value) -> Result<Bakery, RecipePa
 
     let pantry = input
         .get("pantry")
-        .ok_or_else(|| anyhow::anyhow!("Unable to find pantry in input"))?
+        .context("Unable to find pantry in input")?
         .to_owned();
 
     let pantry = pantry
         .as_object()
-        .ok_or_else(|| anyhow::anyhow!("Unable to get recipe as object"))?;
+        .context("Unable to get recipe as object")?;
 
     for (key, value) in pantry.iter() {
         bakery
@@ -161,14 +155,14 @@ fn calculate_cookies(bakery: Bakery) -> BakeReply {
 fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, RecipeParseError> {
     let recipe_cookie = request
         .cookie("recipe")
-        .ok_or_else(|| anyhow::anyhow!("No cookie recipe in cookie jar"))?;
+        .context("No cookie recipe in cookie jar")?;
 
     let recipe = recipe_cookie.to_string();
     tracing::trace!("ToString: {:#?}", &recipe);
 
     let (_, recipe) = recipe
         .split_once("=")
-        .ok_or_else(|| anyhow::anyhow!("Badly formed recipe cookie"))?;
+        .context("Badly formed recipe cookie")?;
     tracing::trace!("Split: {:#?}", &recipe);
 
     let recipe = general_purpose::STANDARD
