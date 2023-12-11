@@ -1,3 +1,6 @@
+use actix_web::ResponseError;
+use reqwest::StatusCode;
+
 pub mod application;
 pub mod routes;
 pub mod telemetry;
@@ -13,4 +16,24 @@ pub fn error_chain_fmt(
         current = cause.source();
     }
     Ok(())
+}
+
+#[derive(thiserror::Error)]
+pub enum CodehuntError {
+    #[error(transparent)]
+    UnexpectedError(#[from] anyhow::Error),
+}
+
+impl std::fmt::Debug for CodehuntError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        crate::error_chain_fmt(self, f)
+    }
+}
+
+impl ResponseError for CodehuntError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            CodehuntError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
 }

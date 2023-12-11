@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 
-use actix_web::{get, http::StatusCode, HttpRequest, HttpResponse, Responder, ResponseError};
+use actix_web::{get, HttpRequest, HttpResponse, Responder};
 use anyhow::Context;
 use base64::{engine::general_purpose, Engine as _};
 use serde::Serialize;
 
+use crate::CodehuntError;
+
 #[tracing::instrument]
 #[get("/7/decode")]
-pub async fn decode(request: HttpRequest) -> Result<HttpResponse, RecipeParseError> {
+pub async fn decode(request: HttpRequest) -> Result<HttpResponse, CodehuntError> {
     let r = get_recipe_from_header(request).context("Error in recipe cookie")?;
     tracing::debug!("Recipe: {:?}", &r);
 
@@ -56,7 +58,7 @@ impl Default for Bakery {
 }
 
 #[tracing::instrument]
-fn split_recipe_from_pantry(input: serde_json::Value) -> Result<Bakery, RecipeParseError> {
+fn split_recipe_from_pantry(input: serde_json::Value) -> Result<Bakery, CodehuntError> {
     let mut bakery = Bakery::default();
 
     let recipe = input
@@ -152,7 +154,7 @@ fn calculate_cookies(bakery: Bakery) -> BakeReply {
 }
 
 #[tracing::instrument]
-fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, RecipeParseError> {
+fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, CodehuntError> {
     let recipe_cookie = request
         .cookie("recipe")
         .context("No cookie recipe in cookie jar")?;
@@ -175,27 +177,4 @@ fn get_recipe_from_header(request: HttpRequest) -> Result<serde_json::Value, Rec
     tracing::trace!("Json: {:#?}", &recipe);
 
     Ok(recipe)
-}
-
-#[derive(thiserror::Error)]
-pub enum RecipeParseError {
-    #[error(transparent)]
-    DecodeError(#[from] base64::DecodeError),
-    #[error(transparent)]
-    UnexpectedError(#[from] anyhow::Error),
-}
-
-impl std::fmt::Debug for RecipeParseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        crate::error_chain_fmt(self, f)
-    }
-}
-
-impl ResponseError for RecipeParseError {
-    fn status_code(&self) -> StatusCode {
-        match self {
-            RecipeParseError::DecodeError(_) => StatusCode::BAD_REQUEST,
-            RecipeParseError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        }
-    }
 }
