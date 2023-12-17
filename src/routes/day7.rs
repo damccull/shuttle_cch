@@ -107,26 +107,43 @@ fn calculate_cookies(bakery: Bakery) -> BakeReply {
 
     for (ingredient, &recipe_amount) in bakery.recipe.iter() {
         // Loop gets the amount the recipe needs
+
         // Next, get the amount in the pantry
-        let Some(&pantry_amount) = bakery.pantry.get(ingredient) else {
-            // None of this ingredient. Push a zero to the counter collector
-            max_cookies_by_ingredient.push(0);
-            return BakeReply {
-                cookies: 0,
-                pantry: bakery.pantry,
+        let pantry_amount = if recipe_amount == 0 {
+            tracing::debug!("Setting pantry entry for {} to 0", ingredient.to_string());
+            remaining_pantry.insert(ingredient.to_string(), 0);
+            0
+        } else {
+            let Some(&x) = bakery.pantry.get(ingredient) else {
+                // None of this ingredient. Push a zero to the counter collector
+                max_cookies_by_ingredient.push(0);
+                let reply = BakeReply {
+                    cookies: 0,
+                    pantry: bakery.pantry,
+                };
+                tracing::debug!("BakeReply: {:#?}", &reply);
+                return reply;
             };
+            x
         };
 
-        if recipe_amount > pantry_amount {
+        // Elves are dumb so we have to ensure they're not asking for 0 ingredient
+        if recipe_amount != 0 && recipe_amount > pantry_amount {
             // Not enough ingredient. Push 0 to cookie counter collection
             max_cookies_by_ingredient.push(0);
-            return BakeReply {
+            let reply = BakeReply {
                 cookies: 0,
                 pantry: bakery.pantry,
             };
+            tracing::debug!("BakeReply: {:#?}", &reply);
+            return reply;
         }
 
-        let cookies_can_bake = pantry_amount / recipe_amount;
+        let cookies_can_bake = if pantry_amount == 0 || recipe_amount == 0 {
+            0
+        } else {
+            pantry_amount / recipe_amount
+        };
         tracing::trace!(
             "Ingredient: {}\
         \nNumber of cookies this ingredient can bake: {}",
@@ -136,7 +153,7 @@ fn calculate_cookies(bakery: Bakery) -> BakeReply {
         max_cookies_by_ingredient.push(cookies_can_bake);
     }
     let cookies_can_be_baked = *max_cookies_by_ingredient.iter().min().unwrap_or(&0);
-
+    tracing::debug!("Cookies that can be baked: {}", &cookies_can_be_baked);
     for (ingredient, &recipe_amount) in bakery.recipe.iter() {
         // Loop gets the amount the recipe needs
         let pantry_amount = bakery.pantry[ingredient];
@@ -147,10 +164,13 @@ fn calculate_cookies(bakery: Bakery) -> BakeReply {
         );
     }
 
-    BakeReply {
+    let reply = BakeReply {
         cookies: cookies_can_be_baked,
         pantry: remaining_pantry,
-    }
+    };
+
+    tracing::debug!("BakeReply: {:#?}", &reply);
+    reply
 }
 
 #[tracing::instrument]

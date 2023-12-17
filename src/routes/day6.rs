@@ -19,7 +19,7 @@ pub async fn elf_on_a_self(input: String) -> impl Responder {
 fn match_elfs<'i>(input: &'i str) -> Result<ElfReply, anyhow::Error> {
     tracing::debug!("Building regex matchers");
     let elf_matcher = Regex::new(r#"elf"#).context("Couldn't compile regex")?;
-    let elf_shelf_matcher = Regex::new(r#"elf on a shelf"#).context("Couldn't compile regex")?;
+    let elf_shelf_matcher = Regex::new(r#"(?=(elf on a shelf))"#).context("Couldn't compile regex")?;
     let empty_shelf_matcher =
         Regex::new(r#"(?<!elf on a )shelf"#).context("Couldn't compile regex")?;
 
